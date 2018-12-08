@@ -1,17 +1,17 @@
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-core')
 const PDFMerge = require('easy-pdf-merge')
 const { path, fs, logger } = require('@vuepress/shared-utils')
 
-module.exports = async ({ extension, sourceDir, pages, dest, enabled }) => {
+module.exports = async ({ extension, sourceDir, pages, dest, enabled,host,port }) => {
   if (!enabled) return
   if (extension === 'pdf') {
-    await exportPDF({ sourceDir, pages, dest })
+    await exportPDF({ sourceDir, pages, dest,host,port })
   } else {
     logger.warn(`Not support ${extension} format site export!`)
   }
 }
 
-async function exportPDF ({ sourceDir, pages = [], dest }) {
+async function exportPDF ({ sourceDir, pages = [], dest,host,port }) {
   try {
     const paths = pages.map(s => s.path)
     const pdfTempDir = path.resolve('./_tempPDF')
@@ -21,7 +21,7 @@ async function exportPDF ({ sourceDir, pages = [], dest }) {
     // port finder
     const options = paths.map(path => {
       return {
-        location: `http://localhost:8080${path}`,
+        location: `http://${host}:${port}${path}`,
         path: `${pdfTempDir}/${path.replace(/\//g, '-').replace('-', '').replace(/\.html/, '').replace(/-$/, '')}.pdf`
       }
     })
