@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer-core')
+const puppeteer = require('puppeteer-cn')
 const PDFMerge = require('easy-pdf-merge')
 const { path, fs, logger } = require('@vuepress/shared-utils')
 

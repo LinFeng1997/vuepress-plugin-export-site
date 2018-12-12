@@ -1,6 +1,6 @@
 {
   "name": "vuepress-plugin-export-site",
-  "version": "1.0.0-alpha.8",
+  "version": "1.0.0-beta.1",
   "description": "export-site plugin for vuepress",
   "main": "index.js",
   "publishConfig": {
@@ -13,6 +13,7 @@
   "dependencies": {
     "@vuepress/shared-utils": "^1.0.0-alpha.27",
     "easy-pdf-merge": "^0.1.3",
+    "puppeteer-cn": "^0.1.8",
     "puppeteer-core": "^1.11.0"
   },
   "keywords": [
