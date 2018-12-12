@@ -1,6 +1,6 @@
 {
   "name": "vuepress-plugin-export-site",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "export-site plugin for vuepress",
   "main": "index.js",
   "publishConfig": {
