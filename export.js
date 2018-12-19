@@ -23,9 +23,14 @@ async function exportPDF({sourceDir, pages = [], dest, host, port}) {
         path: `${pdfTempDir}/${path.replace(/\//g, '-').replace('-', '').replace(/\.html/, '').replace(/-$/, '')}.pdf`
       }
     })
-    const files = options.map(option => path.resolve(option.path))
     console.time('cost time');
-    await downloadPDFs(options)
+    logger.tip('start export pdf...');
+    const pageLimit = 50;
+    for (let i = 0; i * pageLimit < options.length; i++) {
+      const num = i * pageLimit;
+      await downloadPDFs(options.slice(num, num + pageLimit))      
+    }
+    const files = options.map(option => path.resolve(option.path))    
     await mergePDF(files, dest)
     logger.success(`export ${dest}.pdf file success!`)
     fs.removeSync(pdfTempDir)
@@ -42,7 +47,7 @@ async function downloadPDFs(options) {
   await Promise.all(options.map(async ({location, path}) => {
     try {
       const page = await browser.newPage()
-      await page.goto(location, {waitUntil: 'networkidle0',timeout: 3000 * options.length})
+      await page.goto(location, {waitUntil: 'networkidle0',timeout: 10000 * options.length})
       await page.pdf({path, format: 'A4'})
       logger.success(`pdf ${path} generator success`)
     } catch (e) {
