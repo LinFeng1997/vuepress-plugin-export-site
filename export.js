@@ -1,23 +1,21 @@
 const puppeteer = require('puppeteer-cn')
 const PDFMerge = require('easy-pdf-merge')
-const { path, fs, logger } = require('@vuepress/shared-utils')
+const {path, fs, logger} = require('@vuepress/shared-utils')
 
-module.exports = async ({ extension, sourceDir, pages, dest, enabled,host,port }) => {
+module.exports = async ({extension, sourceDir, pages, dest, enabled, host, port}) => {
   if (!enabled) return
   if (extension === 'pdf') {
-    await exportPDF({ sourceDir, pages, dest,host,port })
+    await exportPDF({sourceDir, pages, dest, host, port})
   } else {
     logger.warn(`Not support ${extension} format site export!`)
   }
 }
 
-async function exportPDF ({ sourceDir, pages = [], dest,host,port }) {
+async function exportPDF({sourceDir, pages = [], dest, host, port}) {
   try {
     const paths = pages.map(s => s.path)
     const pdfTempDir = path.resolve('./_tempPDF')
     fs.ensureDirSync(pdfTempDir)
-    const browser = await puppeteer.launch()
-    const page = await browser.newPage()
     // port finder
     const options = paths.map(path => {
       return {
@@ -26,31 +24,46 @@ async function exportPDF ({ sourceDir, pages = [], dest,host,port }) {
       }
     })
     const files = options.map(option => path.resolve(option.path))
-    await downloadPDFs(page, options)
+    console.time('cost time');
+    await downloadPDFs(options)
     await mergePDF(files, dest)
-    await browser.close()
+    logger.success(`export ${dest}.pdf file success!`)
     fs.removeSync(pdfTempDir)
+    console.timeEnd('cost time');
   } catch (e) {
-    logger.error(e.stack)
+    console.log('error: ', e);
+    logger.error(e.stack || e)
   }
 }
 
-async function downloadPDFs (page, options) {
-  for (let i = 0; i < options.length; i++) {
-    const { location, path } = options[i]
-    await page.goto(location, { waitUntil: 'networkidle2' })
-    await page.pdf({ path, format: 'A4' })
-    logger.success(`pdf ${path} generator success`)
-  }
+async function downloadPDFs(options) {
+  // console.log('options',options.length);
+  const browser = await puppeteer.launch()
+  await Promise.all(options.map(async ({location, path}) => {
+    try {
+      const page = await browser.newPage()
+      await page.goto(location, {waitUntil: 'networkidle0',timeout: 3000 * options.length})
+      await page.pdf({path, format: 'A4'})
+      logger.success(`pdf ${path} generator success`)
+    } catch (e) {
+      console.log('download error:', e)
+    }
+  }))
+  await browser.close()
 }
 
-function mergePDF (files, exportFile = 'site') {
+function mergePDF(files, exportFile = 'site') {
   return new Promise((resolve, reject) => {
+    // if windows,trans file path
+    if (process.platform === 'win32') files = files.map(file => path.win32.resolve(file))
+    files = files.filter(file => {
+      return fs.pathExistsSync(file)
+    })
+    // console.log('files:\n', files.length)
     PDFMerge(files, `${exportFile}.pdf`, (err) => {
       if (err) {
         reject(err)
       }
-      logger.success(`export ${exportFile}.pdf file success!`)
       resolve()
     })
   })
