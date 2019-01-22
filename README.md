@@ -17,3 +17,19 @@ module.exports = {
   ]
 }
 ```
+
+## Options
+
+1. extension
+
+generator file type.such as pdf.
+
+2. pageReorganization
+
+page reorganization function:
+```javascript
+{
+  extension: 'pdf',
+  pageReorganization: pages => pages.slice(0,5)
+}
+```

@@ -3,14 +3,19 @@ const siteExport = require('./export')
 module.exports = (options = {}, ctx) => {
   return {
     async ready () {
-      const port = await resolvePort(ctx.cliOptions.port || ctx.siteConfig.port);
+      const port = await resolvePort(ctx.cliOptions.port || ctx.siteConfig.port)
       const { host } = await resolveHost(ctx.cliOptions.host || ctx.siteConfig.host)
+      const pageReorganization = options.pageReorganization
+      let pages = ctx.pages;
+      if (pageReorganization && typeof pageReorganization === 'function') {
+        pages = pageReorganization(pages)
+      }
 
       setTimeout(() => {
         siteExport({
           extension: options.extension,
           sourceDir: ctx.sourceDir,
-          pages: ctx.pages,
+          pages,
           dest: ctx.outDir,
           enabled: !ctx.isProd,
           port,
