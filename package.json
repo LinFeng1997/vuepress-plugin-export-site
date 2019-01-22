@@ -1,6 +1,6 @@
 {
   "name": "vuepress-plugin-export-site",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-rc.1",
   "description": "export-site plugin for vuepress",
   "main": "index.js",
   "publishConfig": {
@@ -11,12 +11,10 @@
     "url": "git+https://github.com/LinFeng1997/vuepress-plugin-export-site.git"
   },
   "dependencies": {
-    "@vue/component-compiler-utils": "^2.5.0",
-    "@vuepress/shared-utils": "1.0.0-alpha.27",
+    "@vuepress/shared-utils": "^1.0.0-alpha.27",
     "easy-pdf-merge": "^0.1.3",
-    "portfinder": "^1.0.20",
     "puppeteer-cn": "^0.1.8",
-    "vue-template-compiler": "^2.5.22"
+    "puppeteer-core": "^1.11.0"
   },
   "keywords": [
     "documentation",
